@@ -1,0 +1,8 @@
+[09-Jun-2018 04:04:48 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/nvnationalboard/public_html/wp-content/themes/Divi/index.php:1
+Stack trace:
+#0 {main}
+  thrown in /home/nvnationalboard/public_html/wp-content/themes/Divi/index.php on line 1
+[07-Aug-2018 12:11:42 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/nvnationalboard/public_html/wp-content/themes/Divi/404.php:1
+Stack trace:
+#0 {main}
+  thrown in /home/nvnationalboard/public_html/wp-content/themes/Divi/404.php on line 1

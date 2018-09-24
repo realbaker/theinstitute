@@ -1,0 +1,7 @@
+.et_font_icon li:before {
+    font-family: 'ETmodules' !important;
+}
+
+.et-pb-option--has-preview .wp-picker-open + .wp-picker-input-wrap {
+    z-index: 1000 !important;
+}

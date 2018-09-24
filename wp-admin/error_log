@@ -1,0 +1,66 @@
+[15-Aug-2017 04:09:14 UTC] PHP Warning:  require_once(/home/nvnationalboard/public_html/wp-content/plugins/gravityforms/includes/webapi/webapi.php): failed to open stream: No such file or directory in /home/nvnationalboard/public_html/wp-content/plugins/gravityforms/gravityforms.php on line 161
+[15-Aug-2017 04:09:14 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/nvnationalboard/public_html/wp-content/plugins/gravityforms/includes/webapi/webapi.php' (include_path='.:/opt/alt/php71/usr/share/pear') in /home/nvnationalboard/public_html/wp-content/plugins/gravityforms/gravityforms.php on line 161
+[15-Aug-2017 04:09:15 UTC] PHP Warning:  require_once(/home/nvnationalboard/public_html/wp-content/plugins/gravityforms/includes/webapi/webapi.php): failed to open stream: No such file or directory in /home/nvnationalboard/public_html/wp-content/plugins/gravityforms/gravityforms.php on line 161
+[15-Aug-2017 04:09:15 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/nvnationalboard/public_html/wp-content/plugins/gravityforms/includes/webapi/webapi.php' (include_path='.:/opt/alt/php71/usr/share/pear') in /home/nvnationalboard/public_html/wp-content/plugins/gravityforms/gravityforms.php on line 161
+[15-Aug-2017 04:09:16 UTC] PHP Warning:  require_once(/home/nvnationalboard/public_html/wp-content/plugins/gravityforms/includes/webapi/webapi.php): failed to open stream: No such file or directory in /home/nvnationalboard/public_html/wp-content/plugins/gravityforms/gravityforms.php on line 161
+[15-Aug-2017 04:09:16 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/nvnationalboard/public_html/wp-content/plugins/gravityforms/includes/webapi/webapi.php' (include_path='.:/opt/alt/php71/usr/share/pear') in /home/nvnationalboard/public_html/wp-content/plugins/gravityforms/gravityforms.php on line 161
+[05-Sep-2017 18:27:41 UTC] HTTPInterface.php:373 -> _log_failed_request(): ET_Core_HTTPInterface ERROR :: Remote request failed...
+
+Details: object(ET_Core_HTTPInterface)#3891 (2) {
+  ["REQUEST"]=>
+  object(ET_Core_HTTPRequest)#3889 (6) {
+    ["ARGS"]=>
+    array(7) {
+      ["blocking"]=>
+      bool(true)
+      ["body"]=>
+      string(133) "{"email_address":"mschwich@gmail.com","merge_fields":{"FNAME":"mary","LNAME":"bier"},"ip_signup":"24.161.116.163","status":"pending"}"
+      ["cookies"]=>
+      array(0) {
+      }
+      ["headers"]=>
+      array(3) {
+        ["Authorization"]=>
+        string(66) "Basic RVRfQ29yZTo2OTdkMzYxNTc2YTllMmEzM2UzMjZhYTMxYjAzZjVlMC11czE2"
+        ["Accept"]=>
+        string(16) "application/json"
+        ["Content-Type"]=>
+        string(16) "application/json"
+      }
+      ["method"]=>
+      string(4) "POST"
+      ["sslverify"]=>
+      bool(true)
+      ["user-agent"]=>
+      string(70) "WordPress/4.8.1; ET_Core/3.0.69; http://www.nationalboardinstitute.com"
+    }
+    ["URL"]=>
+    string(59) "https://us16.api.mailchimp.com/3.0/lists/6f4c1cbb0e/members"
+    ["METHOD"]=>
+    string(4) "POST"
+    ["BODY"]=>
+    string(133) "{"email_address":"mschwich@gmail.com","merge_fields":{"FNAME":"mary","LNAME":"bier"},"ip_signup":"24.161.116.163","status":"pending"}"
+    ["IS_AUTH"]=>
+    bool(false)
+    ["OWNER"]=>
+    string(7) "ET_Core"
+  }
+  ["RESPONSE"]=>
+  object(ET_Core_HTTPResponse)#3897 (5) {
+    ["STATUS_CODE"]=>
+    int(404)
+    ["STATUS_MESSAGE"]=>
+    string(9) "Not Found"
+    ["ERROR"]=>
+    bool(true)
+    ["ERROR_MESSAGE"]=>
+    string(9) "Not Found"
+    ["DATA"]=>
+    string(198) "{"type":"http://developer.mailchimp.com/documentation/mailchimp/guides/error-glossary/","title":"Resource Not Found","status":404,"detail":"The requested resource could not be found.","instance":""}"
+  }
+}
+
+[21-Sep-2017 04:28:01 UTC] WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%1$s )' at line 3 for query 
+				SELECT internal_link_count, incoming_link_count, object_id
+				FROM wp_yoast_seo_meta
+			    WHERE object_id IN ( %1$s ) made by WP_List_Table->display, WP_List_Table->display_tablenav, WP_Posts_List_Table->extra_tablenav, do_action('manage_posts_extra_tablenav'), WP_Hook->do_action, WP_Hook->apply_filters, WPSEO_Link_Columns->count_objects, WPSEO_Link_Columns->set_count_objects, WPSEO_Link_Column_Count->set, WPSEO_Link_Column_Count->get_results
