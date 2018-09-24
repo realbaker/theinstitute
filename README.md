@@ -1,2 +1,2 @@
 # theinstitute
-Nation Board Institute
+National Board Institute
