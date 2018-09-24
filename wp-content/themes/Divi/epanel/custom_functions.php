@@ -58,12 +58,6 @@ if ( ! function_exists( 'et_options_stored_in_one_row' ) ) {
 /* sync custom CSS from ePanel with WP custom CSS option introduced in WP 4.7 */
 if ( ! function_exists( 'et_sync_custom_css_options' ) ) {
 	function et_sync_custom_css_options() {
-		$css_synced = get_theme_mod( 'et_pb_css_synced', 'no' );
-
-		if ( 'yes' === $css_synced || ! function_exists( 'wp_get_custom_css' ) ) {
-			return;
-		}
-
 		global $shortname;
 
 		$legacy_custom_css = wp_unslash( et_get_option( "{$shortname}_custom_css" ) );
@@ -74,8 +68,20 @@ if ( ! function_exists( 'et_sync_custom_css_options' ) ) {
 			return;
 		}
 
+		// don't proceed with the sync logic if the custom CSS option does not exist
+		if ( ! function_exists( 'wp_get_custom_css' ) ) {
+			return;
+		}
+
+		$css_synced = get_theme_mod( 'et_pb_css_synced', 'no' );
+
 		// get custom css string from WP customizer
 		$wp_custom_css = wp_get_custom_css();
+
+		// force sync if the current custom CSS is empty
+		if ( 'yes' === $css_synced && '' !== $wp_custom_css ) {
+			return;
+		}
 
 		// ePanel is completely synced with Customizer
 		if ( $wp_custom_css === $legacy_custom_css || false !== strpos( $wp_custom_css, $legacy_custom_css ) ) {
@@ -133,7 +139,7 @@ function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 	}
 
 	$post_id        = et_core_page_resource_get_the_ID();
-	$is_preview     = is_preview() || isset( $_GET['et_pb_preview_nonce'] );
+	$is_preview     = is_preview() || isset( $_GET['et_pb_preview_nonce'] ) || is_customize_preview();
 	$is_singular    = et_core_page_resource_is_singular();
 
 	$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
@@ -200,7 +206,7 @@ if ( ! function_exists( 'et_get_option' ) ) {
 		} else if ( et_options_stored_in_one_row() ) {
 			$et_theme_options_name = 'et_' . $shortname;
 
-			if ( ! isset( $et_theme_options ) || isset( $_POST['wp_customize'] ) ) {
+			if ( ! isset( $et_theme_options ) || is_customize_preview() ) {
 				$et_theme_options = get_option( $et_theme_options_name );
 			}
 			$option_value = isset( $et_theme_options[$option_name] ) ? $et_theme_options[$option_name] : false;
@@ -233,27 +239,25 @@ if ( ! function_exists( 'et_update_option' ) ) {
 		global $et_theme_options, $shortname;
 
 		if ( $is_new_global_setting && '' !== $global_setting_main_name && '' !== $global_setting_sub_name ) {
-			$global_setting = get_option( $global_setting_main_name );
-
-			if ( ! $global_setting ) {
-				$global_setting = array();
-			}
+			$global_setting = get_option( $global_setting_main_name, array() );
 
 			$global_setting[ $global_setting_sub_name ] = $new_value;
 
-			$option_name = $global_setting_main_name;
-			$new_value   = $global_setting;
+			update_option( $global_setting_main_name, $global_setting );
+
 		} else if ( et_options_stored_in_one_row() ) {
 			$et_theme_options_name = 'et_' . $shortname;
 
-			if ( ! isset( $et_theme_options ) ) $et_theme_options = get_option( $et_theme_options_name );
+			if ( ! isset( $et_theme_options ) || is_customize_preview() ) {
+				$et_theme_options = get_option( $et_theme_options_name );
+			}
 			$et_theme_options[$option_name] = $new_value;
 
-			$option_name = $et_theme_options_name;
-			$new_value = $et_theme_options;
-		}
+			update_option( $et_theme_options_name, $et_theme_options );
 
-		update_option( $option_name, $new_value );
+		} else {
+			update_option( $option_name, $new_value );
+		}
 	}
 
 }
@@ -285,7 +289,17 @@ if ( ! function_exists( 'truncate_post' ) ) {
 
 		if ( '' == $post ) global $post;
 
-		$post_excerpt = '';
+		if ( post_password_required( $post ) ) {
+			$post_excerpt = get_the_password_form();
+
+			if ( $echo ) {
+				echo $post_excerpt;
+				return;
+			}
+
+			return $post_excerpt;
+		}
+
 		$post_excerpt = apply_filters( 'the_excerpt', $post->post_excerpt );
 
 		if ( 'on' == et_get_option( $shortname . '_use_excerpt' ) && '' != $post_excerpt ) {
@@ -307,6 +321,9 @@ if ( ! function_exists( 'truncate_post' ) ) {
 
 			// Remove embed shortcode from post content
 			$truncate = preg_replace( '@\[embed[^\]]*?\].*?\[\/embed]@si', '', $truncate );
+
+			// Remove scripts from the post content
+			$truncate = preg_replace( '@\<script(.*?)>(.*?)</script>@si', '', html_entity_decode( $truncate ) );
 
 			if ( $strip_shortcodes ) {
 				$truncate = et_strip_shortcodes( $truncate );
@@ -349,7 +366,8 @@ if ( ! function_exists( 'et_wp_trim_words' ) ) {
 	function et_wp_trim_words( $text, $num_words = 55, $more = null ) {
 		if ( null === $more )
 			$more = esc_html__( '&hellip;' );
-		$original_text = $text;
+		// Completely remove icons so that unicode hex entities representing the icons do not get included in words.
+		$text = preg_replace( '/<span class="et-pb-icon .*<\/span>/', '', $text );
 		$text = wp_strip_all_tags( $text );
 
 		$text = trim( preg_replace( "/[\n\r\t ]+/", ' ', $text ), ' ' );
@@ -1552,12 +1570,42 @@ add_action( 'wp_head', 'et_add_custom_css', 100 );
 
 if ( ! function_exists( 'et_get_google_fonts' ) ) :
 
-	/**
- * Returns the list of popular google fonts
- *
- */
+ /**
+  * Returns the list of popular google fonts
+  * Fallback to websafe fonts if disabled
+  */
+
 	function et_get_google_fonts() {
-		$google_fonts = array(
+		$websafe_fonts = array(
+			'Georgia' => array(
+				'styles' 		=> '300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
+				'character_set' => 'cyrillic,greek,latin',
+				'type'			=> 'serif',
+			),
+			'Times New Roman' => array(
+				'styles' 		=> '300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
+				'character_set' => 'arabic,cyrillic,greek,hebrew,latin',
+				'type'			=> 'serif',
+			),
+			'Arial' => array(
+				'styles' 		=> '300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
+				'character_set' => 'arabic,cyrillic,greek,hebrew,latin',
+				'type'			=> 'sans-serif',
+			),
+			'Trebuchet' => array(
+				'styles' 		=> '300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
+				'character_set' => 'cyrillic,latin',
+				'type'			=> 'sans-serif',
+				'add_ms_version'=> true,
+			),
+			'Verdana' => array(
+				'styles' 		=> '300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
+				'character_set' => 'cyrillic,latin',
+				'type'			=> 'sans-serif',
+			),
+		);
+
+		$google_fonts = et_core_use_google_fonts() ? array(
 			'Open Sans'             => array(
 				'styles' 		=> '300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
 				'character_set' => 'latin,cyrillic-ext,greek-ext,greek,vietnamese,latin-ext,cyrillic',
@@ -1958,7 +2006,7 @@ if ( ! function_exists( 'et_get_google_fonts' ) ) :
 				'character_set' => 'latin',
 				'type'			=> 'cursive',
 			),
-		);
+		) : $websafe_fonts;
 
 		return apply_filters( 'et_google_fonts', $google_fonts );
 	}
@@ -2018,7 +2066,9 @@ if ( ! function_exists( 'et_gf_enqueue_fonts' ) ) :
 	function et_gf_enqueue_fonts( $et_gf_font_names ) {
 		global $shortname;
 
-		if ( ! is_array( $et_gf_font_names ) || empty( $et_gf_font_names ) ) return;
+		if ( ! is_array( $et_gf_font_names ) || empty( $et_gf_font_names ) || ! et_core_use_google_fonts() ) {
+			return;
+		}
 
 		$google_fonts = et_get_google_fonts();
 		$protocol = is_ssl() ? 'https' : 'http';

@@ -845,17 +845,11 @@ class ET_Core_PageResource {
 	 * @param bool    $update
 	 */
 	public static function save_post_cb( $post_id, $post, $update ) {
-		if ( ! $update ) {
+		if ( ! $update || ! function_exists( 'et_builder_enabled_for_post' ) ) {
 			return;
 		}
 
-		$post_types = array( 'post', 'page', 'project' );
-
-		if ( function_exists( 'et_builder_get_builder_post_types' ) ) {
-			$post_types = array_merge( $post_types, et_builder_get_builder_post_types() );
-		}
-
-		if ( ! in_array( $post->post_type, $post_types ) ) {
+		if ( ! et_builder_enabled_for_post( $post_id ) ) {
 			return;
 		}
 
@@ -897,9 +891,10 @@ class ET_Core_PageResource {
 
 		$cache_dir = self::get_cache_directory();
 
-		// Pattern Matches: $cache_dir/et-$owner-* AND $cache_dir/$post_id/et-$owner-*
-		$pattern = "{$cache_dir}/{et-{$_owner}-*,{$_post_id}/et-{$_owner}-*}";
-		$files   = glob( $pattern, GLOB_BRACE );
+		$files = array_merge(
+			(array) glob( "{$cache_dir}/et-{$_owner}-*" ),
+			(array) glob( "{$cache_dir}/{$_post_id}/et-{$_owner}-*" )
+		);
 
 		foreach( (array) $files as $file ) {
 			$file = self::$data_utils->normalize_path( $file );

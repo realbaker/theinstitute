@@ -26,6 +26,35 @@ $shortname 	= esc_html( $shortname );
 $pages_ids 	= array_map( 'intval', $pages_ids );
 $cats_ids 	= array_map( 'intval', $cats_ids );
 
+// Get default sidebar class
+if ( is_rtl() ) {
+	$sidebar_options = array(
+		'et_left_sidebar'    => esc_html__( 'Left Sidebar', $themename ),
+		'et_right_sidebar'   => esc_html__( 'Right Sidebar', $themename ),
+	);
+
+	$shop_page_sidebar_options = array(
+		'et_left_sidebar'    => esc_html__( 'Left Sidebar', $themename ),
+		'et_right_sidebar'   => esc_html__( 'Right Sidebar', $themename ),
+		'et_full_width_page' => esc_html__( 'Fullwidth', $themename ),
+	);
+
+	$default_sidebar_class = 'et_left_sidebar';
+} else {
+	$sidebar_options = array(
+		'et_right_sidebar'   => esc_html__( 'Right Sidebar', $themename ),
+		'et_left_sidebar'    => esc_html__( 'Left Sidebar', $themename ),
+	);
+
+	$shop_page_sidebar_options = array(
+		'et_right_sidebar'   => esc_html__( 'Right Sidebar', $themename ),
+		'et_left_sidebar'    => esc_html__( 'Left Sidebar', $themename ),
+		'et_full_width_page' => esc_html__( 'Fullwidth', $themename ),
+	);
+
+	$default_sidebar_class = 'et_right_sidebar';
+}
+
 // Remove option-based filter output on theme options loading
 remove_filter( 'et_load_unminified_scripts', 'et_divi_load_unminified_scripts' );
 remove_filter( 'et_load_unminified_styles', 'et_divi_load_unminified_styles' );
@@ -52,14 +81,6 @@ $options = array (
 				   "button_text" => esc_html__( "Set As Logo", $themename ),
 				   "std" => "",
 				   "desc" => esc_html__( "If you would like to use your own custom logo image click the Upload Image button.", $themename )
-			),
-
-			array( "name" => esc_html__( "Favicon", $themename ),
-				   "id" => $shortname . "_favicon",
-				   "type" => "upload",
-				   "button_text" => esc_html__( "Set As Favicon", $themename ),
-				   "std" => "",
-				   "desc" => esc_html__( "If you would like to use your own custom favicon image click the Upload Image button.", $themename )
 			),
 
 			array( "name" => esc_html__( "Fixed Navigation Bar", $themename ),
@@ -100,15 +121,20 @@ $options = array (
 				   "desc" => esc_html__( "By default the theme truncates your posts on index/homepages automatically to create post previews. If you would rather show your posts in full on index pages like a traditional blog then you can activate this feature.", $themename ),
 			),
 
+			array( 	"name" => esc_html__( "Sidebar Layout", $themename ),
+				   	"id" => $shortname . "_sidebar",
+				   	"type" => "select",
+				   	"options" => $sidebar_options,
+				   	"std" => $default_sidebar_class,
+				   	"desc" => esc_html__( "Here you can choose default sidebar layout", $themename ),
+				   	'et_save_values' => true,
+			),
+
 			array( 	"name" => esc_html__( "Shop Page & Category Page Layout for WooCommerce", $themename ),
 				   	"id" => $shortname . "_shop_page_sidebar",
 				   	"type" => "select",
-				   	"options" => array(
-				   		'et_right_sidebar'   => esc_html__( 'Right Sidebar', $themename ),
-				   		'et_left_sidebar'    => esc_html__( 'Left Sidebar', $themename ),
-				   		'et_full_width_page' => esc_html__( 'Full Width', $themename ),
-				   	),
-				   	"std" => 'et_right_sidebar',
+				   	"options" => $shop_page_sidebar_options,
+				   	"std" => $default_sidebar_class,
 				   	"desc" => esc_html__( "Here you can choose Shop Page & Category Page Layout for WooCommerce.", $themename ),
 				   	'et_save_values' => true,
 			),
@@ -118,7 +144,7 @@ $options = array (
 				"id"                => "et_google_api_settings_api_key",
 				"std"               => "",
 				"type"              => "text",
-				"validation_type"   => "nohtml",
+				"validation_type"   => "apikey",
 				'is_global'         => true,
 				'main_setting_name' => 'et_google_api_settings',
 				'sub_setting_name'  => 'api_key',
@@ -134,6 +160,17 @@ $options = array (
 				"type"              => "checkbox",
 				"std"               => "on",
 				"desc"              => esc_html__( "Disable this option to remove the Google Maps API script from your Divi Builder Pages. This may improve compatibility with third party plugins that also enqueue this script. Please Note: Modules that rely on the Google Maps API in order to function properly, such as the Maps and Fullwidth Maps Modules, will still be available but will not function while this option is disabled (unless you manually add Google Maps API script).", $themename ),
+			),
+
+			array(
+				"name"              => esc_html__( "Use Google Fonts", $themename ),
+				"id"                => "et_use_google_fonts",
+				"main_setting_name" => "et_google_api_settings",
+				"sub_setting_name"  => 'use_google_fonts',
+				'is_global'         => true,
+				"type"              => "checkbox",
+				"std"               => "on",
+				"desc"              => esc_html__( "Disable this option to remove the Google Fonts from your Divi Builder Pages.", $themename ),
 			),
 
 			array( "name" =>esc_html__( "Show Facebook Icon", $themename ),
@@ -841,7 +878,7 @@ $options = array (
 				   "id" => $shortname . "_integration_single_bottom",
 				   "type" => "textarea",
 				   "std" => "",
-				   "desc" => esc_html__( "Any code you place here will be placed at the top of all single posts. This is useful if you are looking to integrating things such as social bookmarking links.", $themename )
+				   "desc" => esc_html__( "Any code you place here will be placed at the bottom of all single posts. This is useful if you are looking to integrating things such as social bookmarking links.", $themename )
 			),
 
 		array( "name" => "integration-1",
@@ -890,6 +927,8 @@ $options = array (
 				'main_setting_name' => 'et_automatic_updates_options',
 				'sub_setting_name'  => 'api_key',
 			),
+
+			et_divi_version_rollback()->get_epanel_option(),
 
 		array( "name" => "updates-1",
 			   "type" => "subcontent-end",),
