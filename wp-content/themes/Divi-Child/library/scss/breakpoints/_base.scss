@@ -1,0 +1,120 @@
+a {
+  color: #347698;
+}
+
+a:hover {
+  color: #285b76;
+}
+
+h1, h2 {
+  color: #59554c;
+}
+
+h3 {
+  color: #ac6c58;
+  line-height: 1.5;
+}
+
+.offset:before {
+  display: block;
+  content: " ";
+  height: 150px;
+  /* Give height of your fixed element */
+  margin-top: -150px;
+  /* Give negative margin of your fixed element */
+}
+
+body .et_pb_contact_submit, body .et_password_protected_form .et_submit_button, body .et_pb_bg_layout_light .et_pb_newsletter_button, body .comment-reply-link, body .form-submit .et_pb_button, body .et_pb_bg_layout_light .et_pb_promo_button, body .et_pb_bg_layout_light .et_pb_more_button, body .woocommerce a.button.alt, body .woocommerce-page a.button.alt, body .woocommerce button.button.alt, body .woocommerce-page button.button.alt, body .woocommerce input.button.alt, body .woocommerce-page input.button.alt, body .woocommerce #respond input#submit.alt, body .woocommerce-page #respond input#submit.alt, body .woocommerce #content input.button.alt, body .woocommerce-page #content input.button.alt, body .woocommerce a.button, body .woocommerce-page a.button, body .woocommerce button.button, body .woocommerce-page button.button, body .woocommerce input.button, body .woocommerce-page input.button, body .et_pb_contact p input[type="checkbox"]:checked + label i::before, body .et_pb_bg_layout_light.et_pb_module.et_pb_button {
+  color: #fff;
+}
+
+.et_pb_bg_layout_dark .et_pb_slide_title a:hover {
+  color: #fff;
+}
+
+#footer-widgets .footer-widget .zoom-social-icons-list--no-labels .zoom-social_icons-list__item {
+  padding-left: 0;
+}
+
+#footer-widgets .footer-widget .zoom-social-icons-list--no-labels .zoom-social_icons-list__item:before {
+  display: none;
+}
+
+.gform_anchor:before {
+  content: "";
+  display: block;
+  height: 140px;
+  /* fixed header height*/
+  margin: -140px 0 0;
+  /* negative fixed header height */
+}
+
+.gform_wrapper form {
+  margin-top: -33px !important;
+}
+
+.gform_wrapper .gform_button {
+  color: #347698;
+  position: relative;
+  padding: .3em 1em;
+  border: 2px solid #347698;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background: 0 0;
+  font-size: 20px !important;
+  font-weight: 500;
+  line-height: 1.7em !important;
+  -webkit-transition: all .2s;
+  -moz-transition: all .2s;
+  transition: all .2s;
+}
+
+.gform_wrapper .gform_button:after {
+  font-family: ETmodules !important;
+  font-weight: 400;
+  font-style: normal;
+  font-variant: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
+  position: absolute;
+  margin-left: -1em;
+  opacity: 0;
+  font-size: 32px;
+  line-height: 1em;
+  content: "\35";
+  -webkit-transition: all .2s;
+  -moz-transition: all .2s;
+  transition: all .2s;
+}
+
+.gform_wrapper .gform_button:hover {
+  color: #fff;
+  cursor: pointer;
+  padding: .3em 2em .3em 1em;
+  background: #347698 !important;
+}
+
+.gform_wrapper .gform_button:hover:after {
+  margin-left: 0;
+  opacity: 1;
+}
+
+.gform_wrapper div.validation_error {
+  display: none;
+}
+
+.gform_wrapper .validation_message {
+  padding-top: 0 !important;
+}
+
+.gform_wrapper li.gfield.gfield_error,
+.gform_wrapper li.gfield.gfield_error.gfield_contains_required.gfield_creditcard_warning {
+  background-color: transparent !important;
+  margin-bottom: 0px !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  padding-bottom: 0px !important;
+  padding-top: 0px !important;
+}
