@@ -155,12 +155,12 @@ class CtfFeed
         );
         $this->setStandardTextOptions( $standard_text, '' );
 
-        $this->setStandardTextOptions( 'retweetedtext', 'Retweeted' );
+        $this->setStandardTextOptions( 'retweetedtext', __( 'Retweeted', 'custom-twitter-feeds' ) );
 
         $this->setStandardTextOptions( 'multiplier', 1.25 );
         $this->setStandardTextOptions( 'twitterlinktext', 'Twitter' );
 
-        $this->setStandardTextOptions( 'buttontext', 'Load More...' );
+        $this->setStandardTextOptions( 'buttontext', __( 'Load More...', 'custom-twitter-feeds' ) );
 
         $text_size = array(
             'authortextsize',
@@ -292,10 +292,10 @@ class CtfFeed
     {
         if ( is_array( $options ) ) {
             foreach ( $options as $option ) {
-                $this->feed_options[$option] = isset( $this->atts[$option] ) ? esc_attr( $this->atts[$option] ) : ( isset( $this->db_options[$option] ) ?  esc_attr( $this->db_options[$option] )  : $default );
+                $this->feed_options[$option] = isset( $this->atts[$option] ) ? esc_attr( __( $this->atts[$option], 'custom-twitter-feeds' ) ) : ( isset( $this->db_options[$option] ) ?  esc_attr( $this->db_options[$option] )  : $default );
             }
         } else {
-            $this->feed_options[$options] = isset( $this->atts[$options] ) ? esc_attr( $this->atts[$options] ) : ( isset( $this->db_options[$options] ) ?  esc_attr( $this->db_options[$options] )  : $default );
+            $this->feed_options[$options] = isset( $this->atts[$options] ) ? esc_attr( __( $this->atts[$options], 'custom-twitter-feeds' ) ) : ( isset( $this->db_options[$options] ) ?  esc_attr( $this->db_options[$options] )  : $default );
         }
     }
 
@@ -942,7 +942,7 @@ class CtfFeed
     {
         $json_data = '{';
         $i = 0;
-        $len = count( $this->atts );
+	    $len = is_array( $this->atts ) ? count( $this->atts ) : 0;
 
         if ( ! empty( $this->atts ) ) {
             foreach ( $this->atts as $key => $value) {
@@ -1071,9 +1071,9 @@ class CtfFeed
         $html = '';
 
         $html .= '<div class="ctf-out-of-tweets">';
-        $html .= '<p>That\'s all! No more Tweets to load</p>';
+        $html .= '<p>' . __( "That's all! No more Tweets to load", 'custom-twitter-feeds' ) . '</p>';
         $html .= '<p>';
-        $html .= '<a class="twitter-share-button" href="https://twitter.com/share" target="_blank" data-size="large" data-url="<?php echo get_home_url(); ?>">Share</a>';
+        $html .= '<a class="twitter-share-button" href="https://twitter.com/share" target="_blank" data-size="large" data-url="'.get_home_url().'">Share</a>';
         if ( !empty( $feed_options['screenname'] ) ) {
             $html .= '<a class="twitter-follow-button" href="https://twitter.com/' . $feed_options['screenname'] . '" target="_blank" data-show-count="false" data-size="large" data-dnt="true">Follow</a>';
         }
@@ -1134,7 +1134,7 @@ class CtfFeed
         }
 
         if ( $feed_options['creditctf'] ) {
-            $ctf_feed_html .= '<div class="ctf-credit-link"><a href="https://smashballoon.com/custom-twitter-feeds" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i>Custom Twitter Feeds Plugin</a></div>';
+            $ctf_feed_html .= '<div class="ctf-credit-link"><a href="https://smashballoon.com/custom-twitter-feeds" target="_blank"><i class="fa fab fa-twitter" aria-hidden="true"></i>Custom Twitter Feeds Plugin</a></div>';
         }
 
         $ctf_feed_html .= '</div>'; // closing div tag for #ctf
@@ -1178,10 +1178,10 @@ class CtfFeed
             $ctf_header_html .= '</span>';
 
             if ( $tweet_set[0]['user']['verified'] == 1 ) {
-                $ctf_header_html .= '<span class="ctf-verified"><i class="fa fa-check-circle"></i></span>';
+                $ctf_header_html .= '<span class="ctf-verified"><i class="fa fa-check-circle" aria-hidden="true"></i></span>';
             }
 
-            $ctf_header_html .= '<span class="ctf-header-follow"><i class="fa fa-twitter" aria-hidden="true"></i>Follow</span>';
+            $ctf_header_html .= '<span class="ctf-header-follow"><i class="fa fab fa-twitter " aria-hidden="true"></i>Follow</span>';
             $ctf_header_html .= '</p>';
 
             if ( $feed_options['showbio'] && !empty($tweet_set[0]['user']['description']) ) {
@@ -1190,7 +1190,7 @@ class CtfFeed
 
             $ctf_header_html .= '</div>';
             $ctf_header_html .= '<div class="ctf-header-img">';
-            $ctf_header_html .= '<div class="ctf-header-img-hover"><i class="fa fa-twitter"></i></div>';
+            $ctf_header_html .= '<div class="ctf-header-img-hover"><i class="fa fab fa-twitter" aria-hidden="true"></i></div>';
             $ctf_header_html .= '<img src="' . $tweet_set[0]['user']['profile_image_url_https'] . '" alt="' . $tweet_set[0]['user']['name'] . '" width="48" height="48">';
             $ctf_header_html .= '</div>';
             $ctf_header_html .= '</a>';
@@ -1212,7 +1212,7 @@ class CtfFeed
             $ctf_header_html .= '</div>';
             $ctf_header_html .= '<div class="ctf-header-img">';
             $ctf_header_html .= '<div class="ctf-header-generic-icon">';
-            $ctf_header_html .= '<i class="fa fa-twitter"></i>';
+            $ctf_header_html .= '<i class="fa fab fa-twitter" aria-hidden="true"></i>';
             $ctf_header_html .= '</div>';
             $ctf_header_html .= '</div>';
             $ctf_header_html .= '</a>';
@@ -1286,13 +1286,13 @@ class CtfFeed
 		                switch ( $quoted_media[0]['type'] ) {
 			                case 'video':
 			                case 'animated_gif':
-				                $quoted_media_text     .= '<i style="padding-right: 5px;" class="fa fa-file-video-o ctf-tweet-text-media"></i>';
+				                $quoted_media_text     .= '<i style="padding-right: 5px;" class="fa fa-file-video-o ctf-tweet-text-media" aria-hidden="true"></i>';
 				                break;
 			                default:
 				                if ( $quoted_media_count > 1 ) {
-					                $quoted_media_text     .= '<span class="ctf-quoted-tweet-text-media-wrap">' . $quoted_media_count . '<i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media"></i></span>';
+					                $quoted_media_text     .= '<span class="ctf-quoted-tweet-text-media-wrap">' . $quoted_media_count . '<i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media"  aria-hidden="true"></i></span>';
 				                } else {
-					                $quoted_media_text     .= '<span class="ctf-quoted-tweet-text-media-wrap"><i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media"></i></span>';
+					                $quoted_media_text     .= '<span class="ctf-quoted-tweet-text-media-wrap"><i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media" aria-hidden="true"></i></span>';
 				                }
 				                break;
 		                }
@@ -1313,13 +1313,13 @@ class CtfFeed
 		            switch ( $post_media[0]['type'] ) {
 			            case 'video':
 			            case 'animated_gif':
-				            $post_media_text     .= '<i style="padding-right: 5px;" class="fa fa-file-video-o ctf-tweet-text-media"></i>';
+				            $post_media_text     .= '<i style="padding-right: 5px;" class="fa fa-file-video-o ctf-tweet-text-media" aria-hidden="true"></i>';
 				            break;
 			            default:
 			            	if ( $post_media_count > 1 ) {
-					            $post_media_text     .= $post_media_count . '<i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media"></i>';
+					            $post_media_text     .= $post_media_count . '<i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media" aria-hidden="true"></i>';
 				            } else {
-					            $post_media_text     .= '<i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media"></i>';
+					            $post_media_text     .= '<i style="padding-right: 5px;" class="fa fa-picture-o ctf-tweet-text-media" aria-hidden="true"></i>';
 				            }
 				            break;
 		            }
@@ -1332,7 +1332,7 @@ class CtfFeed
 
                 if ( isset( $retweeter ) && ctf_show( 'retweeter', $feed_options ) ) {
                     $tweet_html .= '<div class="ctf-context">';
-                    $tweet_html .= '<a href="https://twitter.com/intent/user?screen_name=' . $retweeter['screen_name'] . '" target="_blank" class="ctf-retweet-icon"><i class="fa fa-retweet"></i><span class="ctf-screenreader">Retweet on Twitter</span></a>';
+                    $tweet_html .= '<a href="https://twitter.com/intent/user?screen_name=' . $retweeter['screen_name'] . '" target="_blank" class="ctf-retweet-icon"><i class="fa fa-retweet" aria-hidden="true"></i><span class="ctf-screenreader">'.__( 'Retweet on Twitter', 'custom-twitter-feeds' ).'</span></a>';
                     $tweet_html .= '<a href="https://twitter.com/' . $retweeter['screen_name'] . '" target="_blank" class="ctf-retweet-text" style="' . $feed_options['authortextsize'] . $feed_options['authortextweight'] . $feed_options['textcolor'] . '">' . $retweeter['name'] . ' ' . $feed_options['retweetedtext'] . '</a>';
                     $tweet_html .= '</div>';
                 }
@@ -1350,7 +1350,7 @@ class CtfFeed
 		            if ( ctf_show( 'author', $feed_options ) ) {
 			            $tweet_html .= '<a href="https://twitter.com/' . $post['user']['screen_name'] . '" target="_blank" class="ctf-author-name" style="' . $feed_options['authortextsize'] . $feed_options['authortextweight'] . $feed_options['textcolor'] . '">' . $post['user']['name'] . '</a>';
 			            if ( $post['user']['verified'] == 1 ) {
-				            $tweet_html .= '<span class="ctf-verified" ><i class="fa fa-check-circle" ></i ></span>';
+				            $tweet_html .= '<span class="ctf-verified" ><i class="fa fa-check-circle" aria-hidden="true"></i></span>';
 			            }
 			            $tweet_html .= '<a href="https://twitter.com/' . $post['user']['screen_name'] . '" class="ctf-author-screenname" target="_blank" style="' . $feed_options['authortextsize'] . $feed_options['authortextweight'] . $feed_options['textcolor'] . '">@' . $post['user']['screen_name'] . '</a>';
 			            $tweet_html .= '<span class="ctf-screename-sep">&middot;</span>';
@@ -1394,7 +1394,7 @@ class CtfFeed
                     $tweet_html .= '<span class="ctf-quoted-author-name">' . $quoted['user']['name'] . '</span>';
 
                     if ($quoted['user']['verified'] == 1) {
-                        $tweet_html .= '<span class="ctf-quoted-verified"><i class="fa fa-check-circle" ></i></span>';
+                        $tweet_html .= '<span class="ctf-quoted-verified"><i class="fa fa-check-circle" aria-hidden="true"></i></span>';
                     } // user is verified
 
                     $tweet_html .= '<span class="ctf-quoted-author-screenname">@' . $quoted['user']['screen_name'] . '</span>';
@@ -1405,13 +1405,13 @@ class CtfFeed
 
                 $tweet_html .= '<div class="ctf-tweet-actions">';
                 if ( ctf_show( 'actions', $feed_options ) ) {
-                    $tweet_html .= '<a href="https://twitter.com/intent/tweet?in_reply_to=' . $post['id_str'] . '&related=' . $post['user']['screen_name'] . '" class="ctf-reply" target="_blank" style="' . $feed_options['iconsize'] . $feed_options['iconcolor'] . '"><i class="fa fa-reply"></i><span class="ctf-screenreader">Reply on Twitter</span></a>';
-                    $tweet_html .= '<a href="https://twitter.com/intent/retweet?tweet_id=' . $post['id_str'] . '&related=' . $post['user']['screen_name'] . '" class="ctf-retweet" target="_blank" style="' . $feed_options['iconsize'] . $feed_options['iconcolor'] . '"><i class="fa fa-retweet"></i><span class="ctf-screenreader">Retweet on Twitter</span><span class="ctf-action-count ctf-retweet-count">';
+                    $tweet_html .= '<a href="https://twitter.com/intent/tweet?in_reply_to=' . $post['id_str'] . '&related=' . $post['user']['screen_name'] . '" class="ctf-reply" target="_blank" style="' . $feed_options['iconsize'] . $feed_options['iconcolor'] . '"><i class="fa fa-reply" aria-hidden="true"></i><span class="ctf-screenreader">'.__( 'Reply on Twitter', 'custom-twitter-feeds' ).'</span></a>';
+                    $tweet_html .= '<a href="https://twitter.com/intent/retweet?tweet_id=' . $post['id_str'] . '&related=' . $post['user']['screen_name'] . '" class="ctf-retweet" target="_blank" style="' . $feed_options['iconsize'] . $feed_options['iconcolor'] . '"><i class="fa fa-retweet" aria-hidden="true"></i><span class="ctf-screenreader">'.__( 'Retweet on Twitter', 'custom-twitter-feeds' ).'</span><span class="ctf-action-count ctf-retweet-count">';
                     if ( $post['retweet_count'] > 0 ) {
                         $tweet_html .= $post['retweet_count'];
                     }
                     $tweet_html .= '</span></a>';
-                    $tweet_html .= '<a href="https://twitter.com/intent/like?tweet_id=' . $post['id_str'] . '&related=' . $post['user']['screen_name'] . '" class="ctf-like" target="_blank" style="' . $feed_options['iconsize'] . $feed_options['iconcolor'] . '"><i class="fa fa-heart"></i><span class="ctf-screenreader">Like on Twitter</span><span class="ctf-action-count ctf-favorite-count">';
+                    $tweet_html .= '<a href="https://twitter.com/intent/like?tweet_id=' . $post['id_str'] . '&related=' . $post['user']['screen_name'] . '" class="ctf-like" target="_blank" style="' . $feed_options['iconsize'] . $feed_options['iconcolor'] . '"><i class="fa fa-heart" aria-hidden="true"></i><span class="ctf-screenreader">'.__( 'Like on Twitter', 'custom-twitter-feeds' ).'</span><span class="ctf-action-count ctf-favorite-count">';
                     if ( $post['favorite_count'] > 0 ) {
                         $tweet_html .= $post['favorite_count'];
                     }

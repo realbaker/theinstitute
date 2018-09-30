@@ -58,6 +58,7 @@
     border-radius: 40px;
 }
 #ctf .ctf-author-avatar {
+    clear: both;
     margin: 3px 6px 0 -53px;
 }
 #ctf .ctf-author-name {
@@ -429,8 +430,8 @@
     -o-transition: background 0.1s ease-in-out;
     transition: background 0.1s ease-in-out;
 }
-#ctf .ctf-tweet-text-media-wrap i,
-#ctf .ctf-quoted-tweet-text-media-wrap i{
+#ctf .ctf-tweet-text-media-wrap .fa,
+#ctf .ctf-quoted-tweet-text-media-wrap .fa{
     padding-left: 3px;
 }
 #ctf .ctf-tweet-text-media-wrap:hover,

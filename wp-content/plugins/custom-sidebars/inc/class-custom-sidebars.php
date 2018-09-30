@@ -72,9 +72,27 @@ class CustomSidebars {
 	 * We directly initialize sidebar options when class is created.
 	 */
 	private function __construct() {
+		add_action( 'init', array( $this, 'integrations' ) );
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		// Extensions use this hook to initialize themselfs.
 		do_action( 'cs_init' );
+		/**
+		 * Add version to media files
+		 */
+		add_filter( 'wpmu_style_version', array( $this, 'wp_enqueue_add_version' ), 10, 2 );
+		add_filter( 'wpmu_script_version', array( $this, 'wp_enqueue_add_version' ), 10, 2 );
+	}
+
+	/**
+	 * Add version to media files
+	 *
+	 * @since 3.1.3
+	 */
+	public function wp_enqueue_add_version( $version, $handle ) {
+		if ( preg_match( '/^wpmu\-cs\-/', $handle ) ) {
+			return '3.2.1';
+		}
+		return $version;
 	}
 
 	/**
@@ -83,7 +101,6 @@ class CustomSidebars {
 	 * @since 3.0.5
 	 */
 	public function admin_init() {
-
 		$plugin_title = 'Custom Sidebars';
 		
 		/**
@@ -333,6 +350,7 @@ class CustomSidebars {
 				'post_type_single',
 				'search',
 				'tags',
+				'screen',
 			);
 
 			foreach ( $keys as $k ) {
@@ -450,14 +468,12 @@ class CustomSidebars {
 		if ( ! is_array( $sidebars ) ) {
 			$sidebars = array();
 		}
-
 		// Remove invalid items.
 		foreach ( $sidebars as $key => $data ) {
 			if ( ! is_array( $data ) ) {
 				unset( $sidebars[ $key ] );
 			}
 		}
-
 		return $sidebars;
 	}
 
@@ -651,7 +667,7 @@ class CustomSidebars {
 				array( 'public' => false ),
 				'names'
 			);
-			$Ignored_types[] = 'attachment';
+			$Ignored_types['attachment'] = 'attachment';
 		}
 
 		if ( is_object( $posttype ) ) {
@@ -673,7 +689,6 @@ class CustomSidebars {
 			$response = apply_filters( 'cs_support_posttype', $response, $posttype );
 			$Response[ $posttype ] = $response;
 		}
-
 		return $Response[ $posttype ];
 	}
 
@@ -686,22 +701,19 @@ class CustomSidebars {
 	 */
 	static public function get_post_types( $type = 'names' ) {
 		$Valid = array();
-
 		if ( 'objects' != $type ) {
 			$type = 'names';
 		}
-
 		if ( ! isset( $Valid[ $type ] ) ) {
 			$all = get_post_types( array(), $type );
 			$Valid[ $type ] = array();
-
 			foreach ( $all as $post_type ) {
-				if ( self::supported_post_type( $post_type ) ) {
+				$suports = self::supported_post_type( $post_type );
+				if ( $suports  ) {
 					$Valid[ $type ][] = $post_type;
 				}
 			}
 		}
-
 		return $Valid[ $type ];
 	}
 
@@ -966,17 +978,122 @@ class CustomSidebars {
 	 * @since 3.0.1
 	 */
 	public function print_templates() {
+		if ( false == $this->check_screen() ) {
+			return;
+		}
 		wp_enqueue_script( 'wp-util' );
 ?>
 	<script type="text/html" id="tmpl-custom-sidebars-new">
-		
 		<div class="custom-sidebars-add-new">
-			
 			<p><?php esc_html_e( 'Create a custom sidebar to get started.', 'custom-sidebars' ); ?></p>
-			
 		</div>
-		
+	</script>
+    <script type="text/html" id="tmpl-custom-sidebars-new-rule-row">
+        <tr>
+            <td>
+                <select name="cs-screen[minmax][]">
+                    <option value="max"<# if( 'max' == data.minmax ) { #> selected="selected"<# } #>><?php esc_html_e( 'max', 'custom-sidebars' ); ?></option>
+                    <option value="min"<# if( 'min' == data.minmax ) { #> ' selected="selected"<# } #>><?php esc_html_e( 'min', 'custom-sidebars' ); ?></option>
+                </select>
+            </td>
+            <td>
+                <select name="cs-screen[mode][]">
+                    <option value="hide"<# if( 'hide' == data.mode ) { #> selected="selected"<# } #>><?php esc_html_e( 'Hide', 'custom-sidebars' ); ?></option>
+                    <option value="show"<# if( 'show' == data.mode ) { #> selected="selected"<# } #>><?php esc_html_e( 'Show', 'custom-sidebars' ); ?></option>
+                </select>
+            </td>
+            <td><input type="number" name="cs-screen[size][]" min="0" value="{{{data.size}}}" class="textright" /></td>
+            <td class="num"><span class="dashicons dashicons-trash"></span></td>
+        </tr>
 	</script>
 <?php
+	}
+
+	/**
+	 * Inicjalize integrations.
+	 *
+	 * @since 3.1.2
+	 */
+	public function integrations() {
+		/**
+		 * 3rd party plugins integration: WPML
+		 */
+		if ( function_exists( 'icl_object_id' ) && ! defined( 'POLYLANG_VERSION' ) ) {
+			require_once CSB_INC_DIR . 'integrations/class-custom-sidebars-integration-wpml.php';
+		}
+		/**
+		 * 3rd party plugins integration: Polylang
+		 */
+		if ( defined( 'POLYLANG_VERSION' ) && POLYLANG_VERSION ) {
+			require_once CSB_INC_DIR . 'integrations/class-custom-sidebars-integration-polylang.php';
+		}
+		/**
+		 * 3rd party plugins integration: WP Multilang
+		 */
+		if ( defined( 'WPM_PLUGIN_FILE' ) && WPM_PLUGIN_FILE && file_exists( WPM_PLUGIN_FILE ) ) {
+			require_once CSB_INC_DIR . 'integrations/class-custom-sidebars-integration-wml.php';
+		}
+		do_action( 'cs_integrations' );
+	}
+
+	private function check_screen() {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return false;
+		}
+		$screen = get_current_screen();
+		if ( ! is_a( $screen, 'WP_Screen' ) ) {
+			return false;
+		}
+		if ( 'widgets' != $screen->id ) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * get custom taxonomies
+	 *
+	 * @since 3.1.4
+	 *
+	 * @returns array Array of object of custom, public taxonomies
+	 */
+	public static function get_custom_taxonomies( $state = 'all' ) {
+		$args = array(
+			'public'   => true,
+			'_builtin' => false,
+		);
+		$taxonomies = get_taxonomies( $args, 'objects' );
+		if ( empty( $taxonomies ) ) {
+			return array();
+		}
+		/**
+		 * if we need only allowed taxonomies, then remove not needed from
+		 * $taxonomies array
+		 */
+		if ( 'allowed' === $state ) {
+			$editor = CustomSidebarsEditor::instance();
+			$allowed = $editor->get_allowed_custom_taxonmies();
+			if ( empty( $allowed ) ) {
+				return array();
+			}
+			foreach ( $taxonomies as $slug => $taxonomy ) {
+				if ( in_array( $slug, $allowed ) ) {
+					continue;
+				}
+				unset( $taxonomies[ $slug ] );
+			}
+		}
+
+		uasort( $taxonomies, array( __CLASS__, 'sort_by_label' ) );
+		return $taxonomies;
+	}
+
+	/**
+	 * Sort helper for get_custom_taxonomies() function.
+	 *
+	 * @since 3.1.4
+	 */
+	private static function sort_by_label( $a, $b ) {
+		return strcmp( $a->label, $b->label );
 	}
 };

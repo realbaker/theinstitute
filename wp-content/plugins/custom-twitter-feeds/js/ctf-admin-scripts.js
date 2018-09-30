@@ -29,8 +29,8 @@ jQuery(document).ready(function($){
                     just_tokens: true
                 },
                 success: function (data) {
-                    $('#ctf_access_token').after('<span class="ctf-success"><i class="fa fa-check-circle"></i> saved</span>');
-                    $('#ctf_access_token_secret').after('<span class="ctf-success"><i class="fa fa-check-circle"></i> saved</span>');
+                    $('#ctf_access_token').after('<span class="ctf-success"><span class="fa fa-check-circle"></span> saved</span>');
+                    $('#ctf_access_token_secret').after('<span class="ctf-success"><span class="fa fa-check-circle"></span> saved</span>');
                 }
             });
         }
@@ -224,12 +224,12 @@ jQuery(document).ready(function($){
             url : ctf.ajax_url,
             type : 'post',
             data : {
-                action : 'ctf_clear_cache'
+                action : 'ctf_clear_cache_admin'
             },
             success : function(data) {
                 $ctfClearCacheButton.prop('disabled',false);
                 if(!data===false) {
-                    $ctfClearCacheButton.after('<i id="ctf-clear-cache-success" class="fa fa-check-circle ctf-success"></i>');
+                    $ctfClearCacheButton.after('<span id="ctf-clear-cache-success" class="fa fa-check-circle ctf-success"></span>');
                 } else {
                     $ctfClearCacheButton.after('<span>error</span>');
                 }
@@ -255,7 +255,7 @@ jQuery(document).ready(function($){
             success : function(data) {
                 $ctfClearPersistentCacheButton.prop('disabled',false);
                 if(!data===false) {
-                    $ctfClearPersistentCacheButton.after('<i id="ctf-clear-cache-success" class="fa fa-check-circle ctf-success"></i>');
+                    $ctfClearPersistentCacheButton.after('<span id="ctf-clear-cache-success" class="fa fa-check-circle ctf-success"></span>');
                 } else {
                     $ctfClearPersistentCacheButton.after('<span>error</span>');
                 }
@@ -272,4 +272,12 @@ jQuery(document).ready(function($){
     });
     $('#ctf_include_twittercards, #ctf_include_media, #ctf_include_replied_to').attr('disabled', 'true').removeAttr('checked').next('label').css('color', '#999').after(ctfUpgradeNote);
 
+    $('#ctf-admin .ctf-show-pro').closest('span').next('.ctf-pro-options').hide();
+    $('#ctf-admin .ctf-show-pro').click(function() {
+        if ($(this).closest('span').next('.ctf-pro-options').is(':visible')) {
+            $(this).closest('span').next('.ctf-pro-options').hide();
+        } else {
+            $(this).closest('span').next('.ctf-pro-options').show();
+        }
+    });
 });

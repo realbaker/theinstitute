@@ -47,4 +47,4 @@ settings_errors(); ?>
     <?php do_action( 'ctf_admin_add_settings_sections_to_style' ); ?>
     <p class="submit"><input class="button-primary" type="submit" name="save" value="<?php esc_attr_e( 'Save Changes' ); ?>" /></p>
 </form>
-<p><i class="fa fa-chevron-circle-right" aria-hidden="true"></i>&nbsp; <?php _e('Next Step: <a href="?page=custom-twitter-feeds&tab=display">Display your Feed</a>'); ?></p>
+<p><span class="fa fa-chevron-circle-right" aria-hidden="true"></span>&nbsp; <?php _e('Next Step: <a href="?page=custom-twitter-feeds&tab=display">Display your Feed</a>'); ?></p>

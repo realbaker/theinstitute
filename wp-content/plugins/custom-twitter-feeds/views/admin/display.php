@@ -43,7 +43,7 @@
         <!-- <tr class="ctf_pro">
             <td>type</td>
             <td><?php _e( "Display tweets from multiple user accounts/Twitter handles<br />Display tweets from multiple hashtags/search terms<br />Display tweets that \"@\" mention your account", 'custom-twitter-feeds' ); ?></td>
-            <td><code>[custom-twitter-feeds screenname="gopro, NBA"]</code><br /><code>[custom-twitter-feeds search="#awesome+@nba"]</code><br/><code>[custom-twitter-feeds mentions=true]</code></td>
+            <td><code>[custom-twitter-feeds screenname="gopro, NBA"]</code><br /><code>[custom-twitter-feeds search="#awesome OR @nba"]</code><br/><code>[custom-twitter-feeds mentions=true]</code></td>
         </tr>
         <tr class="ctf_pro">
             <td>user</td>
@@ -243,4 +243,4 @@
 
     </tbody>
 </table>
-<p><i class="fa fa-question-circle" aria-hidden="true"></i>&nbsp; <?php _e('Need help? <a href="?page=custom-twitter-feeds&tab=support">Get Support</a>.'); ?></p>
+<p><span class="fa fa-question-circle" aria-hidden="true"></span>&nbsp; <?php _e('Need help? <a href="?page=custom-twitter-feeds&tab=support">Get Support</a>.'); ?></p>

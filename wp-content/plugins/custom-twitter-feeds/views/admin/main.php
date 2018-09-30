@@ -33,10 +33,10 @@
     }
     ?>
 
-    <p><i class="fa fa-life-ring" aria-hidden="true"></i>&nbsp; <?php _e('Need help setting up the plugin? Check out our <a href="https://smashballoon.com/custom-twitter-feeds/free/" target="_blank">setup directions</a>', 'custom-twitter-feeds'); ?></p>
+    <p><span class="fa fa-life-ring" aria-hidden="true"></span>&nbsp; <?php _e('Need help setting up the plugin? Check out our <a href="https://smashballoon.com/custom-twitter-feeds/free/" target="_blank">setup directions</a>', 'custom-twitter-feeds'); ?></p>
 
     <div class="ctf-quick-start">
-        <h3><i class="fa fa-rocket" aria-hidden="true"></i>&nbsp; <?php _e( 'Display your feed', 'custom-twitter-feeds'); ?></h3>
+        <h3><span class="fa fa-rocket" aria-hidden="true"></span>&nbsp; <?php _e( 'Display your feed', 'custom-twitter-feeds'); ?></h3>
         <p><?php _e( "Copy and paste this shortcode directly into the page, post or widget where you'd like to display the feed:", "custom-twitter-feeds" ); ?>
         <input type="text" value="[custom-twitter-feeds]" size="18" readonly="readonly" style="text-align: center;" onclick="this.focus();this.select()" title="<?php _e( 'To copy, click the field then press Ctrl + C (PC) or Cmd + C (Mac).', 'custom-twitter-feeds' ); ?>" /></p>
         <p><?php _e( "Find out how to display <a href='?page=custom-twitter-feeds&tab=display'>multiple feeds</a>.", "custom-twitter-feeds" ); ?></p>

@@ -576,7 +576,7 @@ class CtfAdmin
             'section' => 'ctf_options_advanced', // matches the section name
             'option' => 'ctf_options', // matches the options name
             'class' => '',
-            'whatis' => "Checking this box will make all Search and Hashtag feeds have a permanent cache saved in the database by default of up to 150 tweets. Tweets will be available for the feed even after the 7 day limit though numbers of retweets and likes will not update."
+            'whatis' => "Checking this box will make all Search and Hashtag feeds have a permanent cache saved in the database by default of up to 150 tweets. Tweets will be available for the feed even after the 7 day limit though numbers of retweets and likes will not update"
         ));
 
         /**

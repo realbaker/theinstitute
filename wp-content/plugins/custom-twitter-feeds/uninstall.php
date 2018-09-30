@@ -4,8 +4,8 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 //If the user is preserving the settings then don't delete them
-$options = get_option( 'ctf_configure' );
-$ctf_preserve_settings = $options[ 'preserve_settings' ];
+$options = get_option( 'ctf_options' );
+$ctf_preserve_settings = isset( $options[ 'preserve_settings' ] ) ? $options[ 'preserve_settings' ] : false;
 
 // allow the user to preserve their settings in case they are upgrading
 if ( ! $ctf_preserve_settings ) {

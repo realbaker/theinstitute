@@ -50,7 +50,7 @@ function ctf_rating_notice_html() {
                         <a class='ctf_notice_dismiss' href='" .esc_url( add_query_arg( 'ctf_ignore_rating_notice_nag', 'later' ) ). "'>Ask Me Later</a>
                     </p>
                 </div>
-                <a class='ctf_notice_close' href='" .esc_url( add_query_arg( 'ctf_ignore_rating_notice_nag', '1' ) ). "'><i class='fa fa-close'></i></a>
+                <a class='ctf_notice_close' href='" .esc_url( add_query_arg( 'ctf_ignore_rating_notice_nag', '1' ) ). "'><span class='fa fa-close'></span></a>
             </div>
             ");
 

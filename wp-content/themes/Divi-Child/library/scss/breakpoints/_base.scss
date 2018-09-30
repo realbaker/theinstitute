@@ -118,3 +118,104 @@ body .et_pb_contact_submit, body .et_password_protected_form .et_submit_button, 
   padding-bottom: 0px !important;
   padding-top: 0px !important;
 }
+
+.et_pb_gutters3.et_pb_footer_columns4 .footer-widget {width:20.875% !important;}
+
+.et_pb_gutters3 .footer-widget {margin:0 5.5% 5.5% 0 !important;}
+
+.field-visibility-settings-toggle {display: none;}
+
+#signup_submit {
+  border: 2px solid #347698 !important;
+  color: #347698 !important;
+  font-size: 20px !important;
+  padding: 6px 20px !important;
+}
+
+#signup_submit:hover {
+  color: rgba(255,255,255,0.99)!important;
+  background: #347698!important;
+  border-color: #347698!important;
+}
+
+#signup_submit:hover:after {
+  opacity: 1;
+}
+
+.register #buddypress {
+  float: left;
+  margin-bottom: 50px;
+  width: 100%;
+}
+
+#buddypress .standard-form .register-section {
+  margin-top: 50px;
+}
+
+#tribe-events-pg-template .tribe-events-content ul, .tribe-events-after-html ul, .tribe-events-before-html ul {
+  margin-left: 40px;
+}
+
+#left-area ul, .comment-content ul, .entry-content ul, body.et-pb-preview #main-content .container ul {
+  margin-left: 40px;
+  padding-left: 0 !important;
+}
+
+.tribe-events-title-bar {
+  margin-top: 20px;
+}
+
+.tribe-list-widget li {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.tribe-list-widget li:before {
+  border-width: 0 !important;
+}
+
+.tribe-list-widget .tribe-event-title {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.3;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.tribe-list-widget .tribe-event-duration {
+  line-height: 1.3;
+}
+
+.tribe-events-widget-link a:after {
+  content: '\0276F';
+  font-size: 12px;
+  padding-left: 5px;
+}
+
+.buddypress #main-content .container:before {
+  background-color: transparent;
+}
+
+#footer-widgets a:hover {
+  opacity: .7;
+}
+
+.footer-widget.last,
+.footer-widget:last-of-type {
+  margin-right: 0 !important;
+}
+
+#footer-widgets .footer-widget li.zoom-social_icons-list__item {
+  padding-left: 0;
+}
+
+#footer-widgets .footer-widget li.zoom-social_icons-list__item:before {
+  display: none;
+}
+
+@media screen and (max-width:767px){
+  #footer-widgets .footer-widget:nth-child(n) {
+    width: 100% !important;
+    margin: 0 0 9.5% 0 !important;
+  }
+}

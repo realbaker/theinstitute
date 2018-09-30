@@ -297,7 +297,6 @@
 }
 #ctf-admin .ctf_pro,
 #ctf-admin .ctf_pro label,
-#ctf-admin .ctf_pro .ctf-tooltip-link,
 #ctf_admin .ctf_pro input{
     color: #999 !important;
 }
@@ -374,6 +373,21 @@
     -webkit-transition: all 0.1s ease-in-out;
     -o-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
+}
+#ctf-admin .ctf-pro-options,
+#ctf-admin .ctf-pro-options label{
+    color: #999 !important;
+}
+#ctf-admin .ctf-shortcode_table tr.ctf-pro-options{
+    background: #eacccc;
+}
+#ctf-admin .ctf-pro-options label,
+#ctf-admin .ctf-pro-options .ctf_shortcode {
+    color: #999 !important;
+}
+#ctf-admin .ctf_pro .ctf-tooltip-link,
+#ctf-admin .ctf-pro-options .ctf-tooltip-link {
+    color: #aaa !important;
 }
 #ctf-admin .ctf-success{
     font-size: 14px;

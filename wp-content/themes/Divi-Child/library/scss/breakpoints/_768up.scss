@@ -1,3 +1,23 @@
 .et_header_style_centered #logo {
   max-height: 80% !important;
 }
+
+@media screen and (min-width: 981px){
+  .footer-widget {
+    margin: 0 5.5% 5.5% 0 !important;
+    width: 20.875% !important;
+  } 
+  .footer-widget.last,
+  .footer-widget:last-of-type {
+    margin-right: 0 !important;
+  }
+}
+@media screen and (max-width: 980px){
+  #footer-widgets .footer-widget:nth-child(n) {
+    width: 46.25% !important;
+    margin: 0 7.5% 7.5% 0 !important;
+  }
+  #footer-widgets .footer-widget:nth-child(2n) {
+    margin-right: 0 !important;
+  }
+}

@@ -1,5 +1,6 @@
 <?php
 
+
 add_action( 'cs_init', array( 'CustomSidebarsExport', 'instance' ) );
 
 /**
@@ -15,6 +16,10 @@ class CustomSidebarsExport extends CustomSidebars {
 	// Used after preview. This holds only the items that were selected for import.
 	private $selected_data = null;
 
+	/**
+	 * CSB version
+	 */
+	private $version = '';
 
 	/**
 	 * Returns the singleton object.
@@ -37,17 +42,17 @@ class CustomSidebarsExport extends CustomSidebars {
 	 * @since  2.0
 	 */
 	private function __construct() {
-		if ( is_admin() ) {
-			add_action(
-				'cs_widget_header',
-				array( $this, 'widget_header' )
-			);
+		add_action( 'admin_init', array( $this, 'admin_init' ) );
+	}
 
-			add_action(
-				'cs_ajax_request',
-				array( $this, 'handle_ajax' )
-			);
-		}
+	/**
+	 * Admin Init
+	 *
+	 * @since 3.1.6
+	 */
+	public function admin_init() {
+		add_action( 'cs_widget_header', array( $this, 'widget_header' ) );
+		add_action( 'cs_ajax_request', array( $this, 'handle_ajax' ) );
 	}
 
 	/**
@@ -146,17 +151,15 @@ class CustomSidebarsExport extends CustomSidebars {
 	 */
 	private function get_export_data() {
 		global $wp_registered_widgets, $wp_version;
-
 		$theme = wp_get_theme();
-
 		$csb_info = get_plugin_data( CSB_PLUGIN );
-
+		$this->version = $csb_info['Version'];
 		$data = array();
 		// Add some meta-details to the export file.
 		$data['meta'] = array(
 			'created' => time(),
 			'wp_version' => $wp_version,
-			'csb_version' => @$csb_info['Version'],
+			'csb_version' => $csb_info['Version'],
 			'theme_name' => $theme->get( 'Name' ),
 			'theme_version' => $theme->get( 'Version' ),
 			'description' => htmlspecialchars( @$_POST['export-description'] ),
@@ -271,10 +274,41 @@ class CustomSidebarsExport extends CustomSidebars {
 	 * @since  2.0
 	 */
 	private function download_export_file() {
+		/**
+		 * check nonce
+		 */
+		if (
+			! isset( $_POST['_wpnonce'] )
+			|| ! wp_verify_nonce( $_POST['_wpnonce'], 'custom-sidebars-export' )
+		) {
+			$req = (object) array(
+				'status' => 'ERR',
+			);
+			$req = self::req_err(
+				$req,
+				__( 'You do not have permission for export sidebars.', 'custom-sidebars' )
+			);
+			self::json_response( $req );
+		}
+		/**
+		 * build filename
+		 */
+		$filename = $this->get_file_name();
 		$data = $this->get_export_data();
-		$filename = 'sidebars.' . date( 'Y-m-d.H-i-s' ) . '.json';
-		$option = defined( 'JSON_PRETTY_PRINT' )? JSON_PRETTY_PRINT : null;
-		$content = json_encode( (object) $data, $option );
+		$content = '';
+		/**
+		 * Check PHP version, for PHP < 5.3 do not add options
+		 *
+		 * @since 3.1.6
+		 */
+		$version = phpversion();
+		$compare = version_compare( $version, '5.3', '<' );
+		if ( $compare ) {
+			$content = json_encode( $data );
+		} else {
+			$option = defined( 'JSON_PRETTY_PRINT' )? JSON_PRETTY_PRINT : null;
+			$content = json_encode( $data, $option );
+		}
 		// Send the download headers.
 		header( 'Pragma: public' );
 		header( 'Expires: 0' );
@@ -284,9 +318,41 @@ class CustomSidebarsExport extends CustomSidebars {
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		header( 'Content-Transfer-Encoding: binary' );
 		header( 'Content-Length: ' . strlen( $content ) );
-		// Finally send the export-file content.
-		echo '' . $content;
-		die();
+		/**
+		 * Finally send the export-file content.
+		 */
+		echo $content;
+		exit;
+	}
+
+	/**
+	 * Generate export file name dynamically.
+	 *
+	 * Generate a unique file name to export in json.
+	 *
+	 * @since 3.1.6
+	 *
+	 * @return string File name.
+	 */
+	private function get_file_name() {
+		/**
+		 * get version if it is needded
+		 */
+		if ( empty( $this->version ) ) {
+			$csb_info = get_plugin_data( CSB_PLUGIN );
+			$this->version = $csb_info['Version'];
+		}
+		// Get site name.
+		$site_name = sanitize_key( get_bloginfo( 'name' ) );
+		$site_name = empty( $site_name ) ? '' : $site_name . '.';
+		// Create export file name.
+		$filename = sprintf(
+			'%s.sidebars.%s.%s.json',
+			$site_name,
+			$this->version,
+			date( 'Y-m-d.H-i-s' )
+		);
+		return $filename;
 	}
 
 	/*=============================*\
@@ -308,6 +374,23 @@ class CustomSidebarsExport extends CustomSidebars {
 	 * @return object Updated response object.
 	 */
 	private function read_import_file( $req ) {
+		/**
+		 * check nonce
+		 */
+		if (
+			! isset( $_POST['_wpnonce'] )
+			|| ! wp_verify_nonce( $_POST['_wpnonce'], 'custom-sidebars-import' )
+		) {
+			$req = (object) array(
+				'status' => 'ERR',
+			);
+			$req = self::req_err(
+				$req,
+				__( 'You do not have permission for export sidebars.', 'custom-sidebars' )
+			);
+			self::json_response( $req );
+		}
+
 		if ( is_array( $_FILES['data'] ) ) {
 			switch ( $_FILES['data']['error'] ) {
 				case UPLOAD_ERR_OK:
@@ -376,6 +459,23 @@ class CustomSidebarsExport extends CustomSidebars {
 	 * @return object Updated response object.
 	 */
 	private function prepare_import_data( $req ) {
+		/**
+		 * check nonce
+		 */
+		if (
+			! isset( $_POST['_wpnonce'] )
+			|| ! wp_verify_nonce( $_POST['_wpnonce'], 'custom-sidebars-import' )
+		) {
+			$req = (object) array(
+				'status' => 'ERR',
+			);
+			$req = self::req_err(
+				$req,
+				__( 'You do not have permission for import sidebars.', 'custom-sidebars' )
+			);
+			self::json_response( $req );
+		}
+
 		$data = json_decode( base64_decode( @$_POST['import_data'] ), true );
 
 		if (
@@ -630,7 +730,12 @@ class CustomSidebarsExport extends CustomSidebars {
 		if ( $sidebar_count > 0 ) {
 			self::set_custom_sidebars( $sidebars );
 			$msg[] = sprintf(
-				__( 'Imported %d custom sidebar(s)!', 'custom-sidebars' ),
+				_n(
+					'Imported %d custom sidebar!',
+					'Imported %d custom sidebars!',
+					$sidebar_count,
+					'custom-sidebars'
+				),
 				$sidebar_count
 			);
 		}
@@ -648,40 +753,39 @@ class CustomSidebarsExport extends CustomSidebars {
 		$def_sidebars = wp_get_sidebars_widgets();
 		$widget_list = array();
 		$orig_POST = $_POST;
-		// First replace existing sidebars.
-		foreach ( $data['widgets'] as $sb_id => $sidebar ) {
-			// --- 1. Remove all widgets from the sidebar
-
-			// @see wp-admin/includes/ajax-actions.php : function wp_ajax_save_widget()
-			// Empty the sidebar, in case it contains widgets.
-			$old_widgets = @$def_sidebars[ $sb_id ];
-			$def_sidebars[ $sb_id ] = array();
-			wp_set_sidebars_widgets( $def_sidebars );
-
-			// Also remove the widget-instances from wp-option table.
-			if ( ! is_array( $old_widgets ) ) {
-				$old_widgets = array();
-			}
-			foreach ( $old_widgets as $widget_id ) {
-				$id_base = preg_replace( '/-[0-9]+$/', '', $widget_id );
-				$_POST = array(
-					'sidebar' => $sb_id,
-					'widget-' . $id_base => array(),
-					'the-widget-id' => $widget_id,
-					'delete_widget' => '1',
-				);
-				$this->_refresh_widget_settings( $id_base );
-			}
-
-			// --- 2. Import the new widgets to the sidebar
-
-			foreach ( $sidebar as $class => $widget ) {
-				$widget_base = $widget['id_base'];
-				$widget_name = $this->_add_new_widget( $widget_base, $widget['settings'] );
-
-				if ( ! empty( $widget_name ) ) {
-					$def_sidebars[ $sb_id ][] = $widget_name;
-					$widget_count += 1;
+		/**
+		 * First replace existing sidebars.
+		 */
+		if ( isset( $data['widgets'] ) && is_array( $data['widgets'] ) ) {
+			foreach ( $data['widgets'] as $sb_id => $sidebar ) {
+				// --- 1. Remove all widgets from the sidebar
+				// @see wp-admin/includes/ajax-actions.php : function wp_ajax_save_widget()
+				// Empty the sidebar, in case it contains widgets.
+				$old_widgets = @$def_sidebars[ $sb_id ];
+				$def_sidebars[ $sb_id ] = array();
+				wp_set_sidebars_widgets( $def_sidebars );
+				// Also remove the widget-instances from wp-option table.
+				if ( ! is_array( $old_widgets ) ) {
+					$old_widgets = array();
+				}
+				foreach ( $old_widgets as $widget_id ) {
+					$id_base = preg_replace( '/-[0-9]+$/', '', $widget_id );
+					$_POST = array(
+						'sidebar' => $sb_id,
+						'widget-' . $id_base => array(),
+						'the-widget-id' => $widget_id,
+						'delete_widget' => '1',
+					);
+					$this->_refresh_widget_settings( $id_base );
+				}
+				// --- 2. Import the new widgets to the sidebar
+				foreach ( $sidebar as $class => $widget ) {
+					$widget_base = $widget['id_base'];
+					$widget_name = $this->_add_new_widget( $widget_base, $widget['settings'] );
+					if ( ! empty( $widget_name ) ) {
+						$def_sidebars[ $sb_id ][] = $widget_name;
+						$widget_count += 1;
+					}
 				}
 			}
 		}
@@ -689,7 +793,12 @@ class CustomSidebarsExport extends CustomSidebars {
 		if ( $widget_count > 0 ) {
 			wp_set_sidebars_widgets( $def_sidebars );
 			$msg[] = sprintf(
-				__( 'Imported %d widget(s)!', 'custom-sidebars' ),
+				_n(
+					'Imported %d widget!',
+					'Imported %d widgets!',
+					$widget_count,
+					'custom-sidebars'
+				),
 				$widget_count
 			);
 		}
