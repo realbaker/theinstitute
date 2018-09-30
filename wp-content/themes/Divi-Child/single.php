@@ -42,6 +42,8 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 								//et_divi_post_meta();
                  echo '<p class="post-meta">';
                   echo '<span class="published">'.the_date().'</span>';
+                  echo '<br>';
+                  echo '<span class="author">By: '.get_field('guest_author_name').'</span>';
                 echo '</p>';
 
 
